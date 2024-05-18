@@ -36,8 +36,12 @@ dependencies {
   implementation "com.github.tommyettinger:gdx-backend-gwt:1.1210.1:sources"
   implementation "com.google.jsinterop:jsinterop-annotations:2.0.2:sources"
   implementation project(':core')
-
+  implementation "com.github.intrigus.gdx-freetype-gwt:gdx-freetype-gwt:1.9.10.1"
+  implementation "com.github.intrigus.gdx-freetype-gwt:gdx-freetype-gwt:1.9.10.1:sources"
+  implementation "space.earlygrey:shapedrawer:$shapedrawerVersion:sources"
+  implementation "com.squareup.okhttp3:okhttp:5.0.0-alpha.9:sources"
 }
+
 
 import org.akhikhl.gretty.AppBeforeIntegrationTestTask
 import org.docstr.gradle.plugins.gwt.GwtSuperDev

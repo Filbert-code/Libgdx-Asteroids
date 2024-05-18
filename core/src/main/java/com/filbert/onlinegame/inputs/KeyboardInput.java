@@ -36,13 +36,13 @@ public class KeyboardInput implements UserInput{
             return false;
     }
 
-//    @Override
-//    public boolean isJumpPressed() {
-//        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
-//            return true;
-//        else
-//            return false;
-//    }
+    @Override
+    public boolean isSpacePressed() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
+            return true;
+        else
+            return false;
+    }
 //
 //    @Override
 //    public boolean isDashPressed() {

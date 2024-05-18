@@ -6,4 +6,7 @@ dependencies {
   api "com.github.raeleus.stripe:stripe:$stripeVersion"
   annotationProcessor "org.projectlombok:lombok:$lombokVersion"
   compileOnly "org.projectlombok:lombok:$lombokVersion"
+  api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+  implementation "space.earlygrey:shapedrawer:$shapedrawerVersion"
+  implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.9'
 }

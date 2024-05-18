@@ -3,7 +3,9 @@
 <module rename-to="html">
   <source path="" />
   <inherits name="com.badlogic.gdx.backends.gdx_backends_gwt" />
-  <inherits name="com.filbert.onlinegame.MyGame" />
+  <inherits name="com.badlogic.gdx.graphics.g2d.freetype.freetype-gwt" />
+  <inherits name="space.earlygrey.shapedrawer"/>
+<!--  <inherits name="com.squareup.okhttp3"/>-->
   <inherits name="com.ray3k.stripe" />
   <entry-point class="com.filbert.onlinegame.gwt.GwtLauncher" />
   <set-configuration-property name="gdx.assetpath" value="../assets" />

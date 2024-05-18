@@ -5,7 +5,7 @@ public interface UserInput {
     public boolean isRightPressed();
     public boolean isUpPressed();
     public boolean isDownPressed();
-//    public boolean isJumpPressed();
+    public boolean isSpacePressed();
 //    public boolean isDashPressed();
 //    public boolean isGrabPressed();
     public boolean isStartPressed();

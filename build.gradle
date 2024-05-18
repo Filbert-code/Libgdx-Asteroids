@@ -26,6 +26,12 @@ allprojects {
       testOutputDir file('build/classes/java/test')
     }
   }
+  ext {
+    shapedrawerVersion = '2.5.0'
+  }
+  repositories {
+    maven { url 'https://jitpack.io' }
+  }
 }
 
 configure(subprojects) {
