@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.DelayedRemovalArray;
+import com.badlogic.gdx.utils.FloatArray;
 import com.filbert.onlinegame.Constants;
 import com.filbert.onlinegame.entities.Asteroid;
 import com.filbert.onlinegame.entities.Bullet;
@@ -35,7 +36,7 @@ public class CollisionHandler {
     public void checkPlayerAsteroidCollision() {
         for (Asteroid asteroid: asteroidGroup) {
             boolean isIntersecting = Intersector.intersectPolygons(
-                getFloatArrayFromPointsList(asteroid.convexHullPoints),
+                new FloatArray(asteroid.polygon.getTransformedVertices()),
                 getFloatArrayFromPointsList(game.player1.shipVertices.subList(0, 4))
             );
 
@@ -52,7 +53,7 @@ public class CollisionHandler {
         for (Bullet bullet: bulletGroup) {
             // check if the bullet has hit any of the asteroids
             for (Asteroid asteroid: asteroidGroup) {
-                float[] convexHullPoints = asteroid.getConvexHullFloatArray();
+                float[] convexHullPoints = asteroid.polygon.getTransformedVertices();
                 boolean isIntersecting = Intersector.isPointInPolygon(
                     convexHullPoints,
                     0,
@@ -62,7 +63,7 @@ public class CollisionHandler {
                 );
                 if (isIntersecting) {
                     // handle hitting an asteroid with a bullet
-                    Vector2 asteroidCenter = asteroid.getConvexHullCenter();
+                    Vector2 asteroidCenter = asteroid.getPolygonTransformedCenter();
                     game.createParticleExplosion(asteroidCenter.x, asteroidCenter.y, 5, Constants.ASTEROID_OUTER_COLOR);
                     bulletGroup.removeValue(bullet, false);
                     game.bulletPool.free(bullet);

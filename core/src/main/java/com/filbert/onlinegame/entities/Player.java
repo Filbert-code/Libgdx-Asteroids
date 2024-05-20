@@ -24,7 +24,6 @@ public class Player {
     public float y;
     public float width;
     public float height;
-    public Texture texture;
     public float velX = 0;
     public float velY = 0;
     public float rot = 0;
@@ -37,16 +36,15 @@ public class Player {
     public Point convexHullCenter = new Point(0, 0);
     public UserInput input = new KeyboardInput();
     public Sound shootSound = Gdx.audio.newSound(Gdx.files.internal("sounds/shoot02.mp3"));
-    public Sound thrusterSound = Gdx.audio.newSound(Gdx.files.internal("sounds/loopingthrust.mp3"));
+//    public Sound thrusterSound = Gdx.audio.newSound(Gdx.files.internal("sounds/loopingthrust.mp3"));
     public boolean firingThruster = false;
     public int timer = 0;
 
-    public Player(float x, float y, float width, float height, Texture texture, GameScreen game) {
+    public Player(float x, float y, float width, float height, GameScreen game) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.texture = texture;
         shipVertices = List.of(
             new Point(x + width / 2, y + height),
             new Point(x, y),
@@ -63,8 +61,8 @@ public class Player {
         updateConvexHullCenter();
         fillVerticesDistancesFromCenterList();
 
-        thrusterSound.loop(0.5f);
-        thrusterSound.pause();
+//        thrusterSound.loop(0.5f);
+//        thrusterSound.pause();
     }
 
     public void update(float delta) {
@@ -133,7 +131,7 @@ public class Player {
         if (input.isUpPressed()) {
             move();
             firingThruster = true;
-            thrusterSound.resume();
+//            thrusterSound.resume();
         } else {
             float xYRatio = getXYRatio(velX, velY);
             if (Math.abs(velX) < 5) {
@@ -156,7 +154,7 @@ public class Player {
             fireBullet();
         }
         if (!input.isUpPressed()) {
-            thrusterSound.pause();
+//            thrusterSound.pause();
         }
     }
 
@@ -253,6 +251,6 @@ public class Player {
     }
 
     public void dispose() {
-        texture.dispose();
+
     }
 }

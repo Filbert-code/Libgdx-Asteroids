@@ -32,10 +32,6 @@ public class GameOverScreen implements Screen {
 
         shapeDrawer = new ShapeDrawer(game.batch, new TextureRegion(new Texture("white_region.png")));
 
-        Asteroid asteroid = new Asteroid();
-        asteroid.init(200, 200, 25, 25, 150);
-        asteroidGroup.add(asteroid);
-
         gameOverText = new MovableText(
             280,
             Constants.WINDOW_HEIGHT - 180,

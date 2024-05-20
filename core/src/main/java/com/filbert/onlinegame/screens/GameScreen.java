@@ -11,12 +11,15 @@ import com.badlogic.gdx.utils.DelayedRemovalArray;
 import com.badlogic.gdx.utils.Pool;
 import com.filbert.onlinegame.*;
 import com.filbert.onlinegame.Collisions.CollisionHandler;
+import com.filbert.onlinegame.dataclasses.Point;
 import com.filbert.onlinegame.entities.*;
 import com.filbert.onlinegame.util.Fonts;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static com.filbert.onlinegame.Constants.BACKGROUND_COLOR;
 import static com.filbert.onlinegame.util.Common.getRandFloat;
@@ -56,6 +59,7 @@ public class GameScreen implements Screen {
     };
     public CollisionHandler collisionHandler;
     public ShapeDrawer shapeDrawer;
+    public ShapeDrawer polyShapeDrawer;
     public Random random = new Random();
     public int score = 0;
     public int playerLives = 3;
@@ -64,22 +68,23 @@ public class GameScreen implements Screen {
     public boolean gameOver = false;
     public int level = 1;
     public int numOfAsteroidsToSpawn = 4;
-    public Sound gameMusic = Gdx.audio.newSound(Gdx.files.internal("sounds/cyberpunk_beat.ogg"));
+//    public Sound gameMusic = Gdx.audio.newSound(Gdx.files.internal("sounds/cyberpunk_beat.ogg"));
 
     public GameScreen(GameApp game) {
         this.game = game;
         player1 = spawnPlayer();
 
         shapeDrawer = new ShapeDrawer(game.batch, new TextureRegion(new Texture("white_region.png")));
+        polyShapeDrawer = new ShapeDrawer(game.polyBatch, new TextureRegion(new Texture("white_region.png")));
 
         spawnAsteroids();
 
-        Alien alien = alienPool.obtain();
-        alien.init(50, 50, 50, 0);
-        alienGroup.add(alien);
+//        Alien alien = alienPool.obtain();
+//        alien.init(50, 50, 50, 0);
+//        alienGroup.add(alien);
 
         collisionHandler = new CollisionHandler(bulletGroup, asteroidGroup, this);
-        gameMusic.loop();
+//        gameMusic.loop();
     }
 
     @Override
@@ -89,7 +94,7 @@ public class GameScreen implements Screen {
         updateBullets(delta);
         updateAsteroids(delta);
         updateParticles(delta);
-        updateAliens(delta);
+//        updateAliens(delta);
         updateLevelProgress();
 
         // handle collisions
@@ -108,13 +113,15 @@ public class GameScreen implements Screen {
 
 
         // draw shapes
-        drawBullets();
+        game.polyBatch.begin();
         drawAsteroids();
+        game.polyBatch.end();
+        drawBullets();
         drawParticles();
-        drawAliens();
+//        drawAliens();
         drawPlayer();
-
         game.batch.end();
+
     }
 
     public void spawnAsteroids() {
@@ -177,11 +184,11 @@ public class GameScreen implements Screen {
         }
     }
 
-    public void updateAliens(float delta) {
-        for (Alien alien: alienGroup) {
-            alien.update(delta);
-        }
-    }
+//    public void updateAliens(float delta) {
+//        for (Alien alien: alienGroup) {
+//            alien.update(delta);
+//        }
+//    }
 
     public void drawPlayer() {
         if (playerAlive) {
@@ -198,7 +205,7 @@ public class GameScreen implements Screen {
 
     public void drawAsteroids() {
         for (Asteroid asteroid: asteroidGroup) {
-            asteroid.draw(shapeDrawer);
+            asteroid.draw(polyShapeDrawer);
         }
     }
 
@@ -209,11 +216,11 @@ public class GameScreen implements Screen {
         }
     }
 
-    public void drawAliens() {
-        for (Alien alien: alienGroup) {
-            alien.draw(shapeDrawer);
-        }
-    }
+//    public void drawAliens() {
+//        for (Alien alien: alienGroup) {
+//            alien.draw(shapeDrawer);
+//        }
+//    }
 
     public void playerDied() {
         playerAlive = false;
@@ -227,7 +234,7 @@ public class GameScreen implements Screen {
         if (playerLives == 0) {
             game.setScreen(new GameOverScreen(game, this));
             gameOver = true;
-            gameMusic.stop();
+//            gameMusic.stop();
         }
     }
 
@@ -259,7 +266,6 @@ public class GameScreen implements Screen {
             (float) Constants.WINDOW_HEIGHT / 2 - 32,
             64,
             64,
-            new Texture("ship.png"),
             this
         );
     }
@@ -281,7 +287,8 @@ public class GameScreen implements Screen {
     public void drawDebugConsole() {
         List<String> debugTexts = List.of(
             String.valueOf(score),
-            "Lives: " + String.valueOf(playerLives)
+            "Lives: " + String.valueOf(playerLives),
+            "Num of Asteroids: " + String.valueOf(asteroidGroup.size)
         );
 
         for (int i = 0; i < debugTexts.size(); i++){
@@ -330,6 +337,6 @@ public class GameScreen implements Screen {
     public void dispose() {
         game.batch.dispose();
         player1.dispose();
-        gameMusic.dispose();
+//        gameMusic.dispose();
     }
 }

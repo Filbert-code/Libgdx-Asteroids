@@ -13,6 +13,7 @@ import com.filbert.onlinegame.entities.Asteroid;
 import com.filbert.onlinegame.entities.MovableText;
 import com.filbert.onlinegame.dataclasses.MoveState;
 import com.filbert.onlinegame.util.Fonts;
+import okhttp3.*;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.net.URL;
@@ -36,8 +37,8 @@ public class MenuScreen implements Screen {
 //
 //            String json = "{" +
 //                "\"api_method\": \"POST\"," +
-//                "\"username\": \"John\"," +
-//                "\"high_score\": \"3500\"" +
+//                "\"username\": \"Pueblo\"," +
+//                "\"high_score\": \"5000\"" +
 //            "}";
 //
 //            MediaType JSON = MediaType.get("application/json");

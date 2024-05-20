@@ -1,9 +1,6 @@
 package com.filbert.onlinegame.entities;
 
-import com.badlogic.gdx.math.ConvexHull;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.RandomXS128;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.StringBuilder;
@@ -27,6 +24,7 @@ public class Asteroid implements Pool.Poolable {
     public List<Point> convexHullPoints = new ArrayList<>();
     public RandomXS128 random = new RandomXS128();
     public float randomRotVel;
+    public Polygon polygon;
 
     public void init(float x, float y, float velX, float velY, float size) {
         this.x = x;
@@ -39,32 +37,25 @@ public class Asteroid implements Pool.Poolable {
     }
 
     public void update(float delta) {
-        for (Point point: convexHullPoints) {
-            rotateConvexHull(point, delta);
+        polygon.translate(velX * delta, velY * delta);
+        Vector2 polyCenter = getPolygonCenter();
+        polygon.setOrigin(polyCenter.x, polyCenter.y);
+        polygon.rotate((float) Math.toDegrees(randomRotVel * delta));
 
-            point.x += velX * delta;
-            point.y += velY * delta;
-        }
+        Vector2 center = getPolygonTransformedCenter();
+
+        // update the center x,y
+        x = center.x;
+        y = center.y;
 
         handleReachingBoundary();
     }
 
     public void draw(ShapeDrawer drawer) {
-        float[] floatArray = getConvexHullFloatArray();
         drawer.setColor(Constants.ASTEROID_INNER_COLOR);
-        drawer.filledPolygon(floatArray);
+        drawer.filledPolygon(polygon);
         drawer.setColor(Constants.ASTEROID_OUTER_COLOR);
-        drawer.polygon(floatArray, 5, JoinType.SMOOTH);
-    }
-
-    public void createConvexHull(float[] points) {
-        ConvexHull convexHull = new ConvexHull();
-        FloatArray array = convexHull.computePolygon(points, false);
-        for (int i = 0; i < array.size - 2; i += 2) {
-            float x = array.items[i];
-            float y = array.items[i + 1];
-            this.convexHullPoints.add(new Point(x, y));
-        }
+        drawer.polygon(polygon, 2);
     }
 
     public float[] getRandomPointCloud() {
@@ -76,72 +67,56 @@ public class Asteroid implements Pool.Poolable {
         return points;
     }
 
-    public Vector2 getConvexHullCenter() {
+    public void createConvexHull(float[] points) {
+        ConvexHull convexHull = new ConvexHull();
+        FloatArray array = convexHull.computePolygon(points, false);
+        for (int i = 0; i < array.size - 2; i += 2) {
+            float x = array.items[i];
+            float y = array.items[i + 1];
+            this.convexHullPoints.add(new Point(x, y));
+        }
+        polygon = new Polygon(array.toArray());
+    }
+
+    public Vector2 getPolygonCenter() {
         float xSum = 0;
         float ySum = 0;
-        for (Point point: convexHullPoints) {
-            xSum += point.x;
-            ySum += point.y;
+        float[] vertices = polygon.getVertices();
+        for (int i = 0; i < vertices.length; i++) {
+            if (i % 2 == 0) {
+                xSum += vertices[i];
+            } else {
+                ySum += vertices[i];
+            }
         }
-        return new Vector2(xSum / convexHullPoints.size(), ySum / convexHullPoints.size());
+        return new Vector2(xSum / ((float) vertices.length / 2), ySum / ((float) vertices.length / 2));
     }
 
-    public void rotateConvexHull(Point point, float delta) {
-        // center of the convex hull in world coordinates
-        Vector2 center = getConvexHullCenter();
-
-        // update the center x,y
-        x = center.x;
-        y = center.y;
-
-        // move the coordinates to a new coordinate system (centered around (0,0))
-        // this makes the math a bit cleaner
-        point.x -= center.x;
-        point.y -= center.y;
-
-        float distanceFromCenter = (float) Math.sqrt(Math.pow(point.x, 2) + Math.pow(point.y, 2));
-        double pointAngle = Math.atan2(point.y, point.x);
-        double changedAngle = randomRotVel * delta;
-
-        // rotate the point
-        point.x = (float) (distanceFromCenter*Math.cos(pointAngle + changedAngle));
-        point.y = (float) (distanceFromCenter*Math.sin(pointAngle + changedAngle));
-
-        // move coordinates back to the world coordinate system
-        point.x += center.x;
-        point.y += center.y;
-    }
-
-    public float[] getConvexHullFloatArray() {
-        float[] array = new float[convexHullPoints.size() * 2];
-
-        for (int i = 0; i < convexHullPoints.size() * 2; i += 2) {
-            Point p = convexHullPoints.get(i / 2);
-            array[i] = p.x;
-            array[i + 1] = p.y;
+    public Vector2 getPolygonTransformedCenter() {
+        float xSum = 0;
+        float ySum = 0;
+        float[] vertices = polygon.getTransformedVertices();
+        for (int i = 0; i < vertices.length; i++) {
+            if (i % 2 == 0) {
+                xSum += vertices[i];
+            } else {
+                ySum += vertices[i];
+            }
         }
-        return array;
+        return new Vector2(xSum / ((float) vertices.length / 2), ySum / ((float) vertices.length / 2));
     }
 
     public void handleReachingBoundary() {
         // wrap asteroid if reaches the end of the screen
         if (velX > 0 && x > Constants.WINDOW_WIDTH + size / 2) {
-            for (Point point: convexHullPoints) {
-                point.x -= Constants.WINDOW_WIDTH + size;
-            }
+            polygon.translate(-Constants.WINDOW_WIDTH - size, 0);
         } else if (velX < 0 && x < -size / 2) {
-            for (Point point: convexHullPoints) {
-                point.x += Constants.WINDOW_WIDTH + size;
-            }
+            polygon.translate(Constants.WINDOW_WIDTH + size, 0);
         }
         if (velY > 0 && y > Constants.WINDOW_HEIGHT + size / 2) {
-            for (Point point: convexHullPoints) {
-                point.y -= Constants.WINDOW_HEIGHT + size;
-            }
+            polygon.translate(0, -Constants.WINDOW_HEIGHT - size);
         } else if (velY < 0 && y < -size / 2) {
-            for (Point point: convexHullPoints) {
-                point.y += Constants.WINDOW_HEIGHT + size;
-            }
+            polygon.translate(0, Constants.WINDOW_HEIGHT + size);
         }
     }
 
